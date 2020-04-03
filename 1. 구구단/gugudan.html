@@ -24,33 +24,55 @@
         }
 
         // 이벤트 콜백함수들
-        handleOnSubmit = e => {
+        onSubmit = e => {
           e.preventDefault();
           if (Number(this.state.value) === this.state.first * this.state.second) {
-            this.setState({
-              result: `${this.state.value} 딩동댕`,
-              first: Math.ceil(Math.random() * 9),
-              second: Math.ceil(Math.random() * 9),
-              value: ""
+            // 함수형 setState, 첫번째 인자로 이전 state를 받음?
+            // 이전 state값을 활용해 state를 설정할 경우 함수형 setState를 사용하는 것이 좋음
+            this.setState(prevState => {
+              return {
+                result: `${prevState.value} 딩동댕`,
+                first: Math.ceil(Math.random() * 9),
+                second: Math.ceil(Math.random() * 9),
+                value: ""
+              };
             });
+            this.input.focus(); // document.querySelector('input').focus() 와 같음
           } else {
             this.setState({
               result: "땡",
               value: ""
             });
+            this.input.focus();
           }
         };
 
-        handleChange = e => this.setState({ value: e.target.value });
+        onChange = e => this.setState({ value: e.target.value });
+
+        onRefInput = c => {
+          this.input = c;
+        };
+
+        input; // ref로 접근
 
         render() {
+          console.log("렌더링");
+          // 페이지 처음 로딩되었을 때 렌더링
+          // setState로 state 변경될 때마다 렌더링 (맨 아래의 render 함수 실행)
+          // 오래 걸리는 작업 등 실행할 때 성능 최적화할 때 중요
+          // render() 안쪽에 함수를 생성하면 렌더링할 때마다 생성되는 것 유의
           return (
             <React.Fragment>
               <div>
                 {this.state.first} 곱하기 {this.state.second}는?
               </div>
-              <form onSubmit={this.handleOnSubmit}>
-                <input type="number" value={this.state.value} onChange={this.handleChange} />
+              <form onSubmit={this.onSubmit}>
+                <input
+                  ref={this.onRefInput}
+                  type="number"
+                  value={this.state.value}
+                  onChange={this.onChange}
+                />
                 <button type="submit">입력</button>
               </form>
               <div>{this.state.result}</div>
