@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      //const e = React.createElement;
+
+      class LikeButton extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            liked: false
+          };
+        }
+
+        //아래 내용의 컴포넌트 만들겠다
+        render() {
+          return (
+            <button
+              onClick={() => {
+                this.setState({ liked: true });
+              }}
+            >
+              {this.state.liked ? "Liked" : "Like"}
+            </button>
+          ); // JSX (JS + XML)
+        }
+
+        //   e(
+        //     "button",
+        //     {
+        //       onClick: () => {
+        //         this.setState({ liked: true });
+        //       }
+        //     },
+        //     this.state.liked ? "Liked" : "Like"
+        //   );
+        // <button>Like</button>
+        //}
+      }
+    </script>
+    <script type="text/babel">
+      // 위의 내용을 실제 화면에 반영: root에다가 붙여줘
+      //ReactDOM.render(e(LikeButton), document.querySelector("#root"));
+      ReactDOM.render(<LikeButton />, document.querySelector("#root"));
+    </script>
+  </body>
+</html>
