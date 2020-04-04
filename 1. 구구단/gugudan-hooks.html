@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <title>구구단</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      // functional component
+      const GuGuDan = () => {
+        // [foo, setFoo]에서 setFoo는 foo의 전용 setState
+        // state들은 꼭 functional component 안에!
+        // useState가 hooks
+        const [first, setFirst] = React.useState(Math.ceil(Math.random() * 9));
+        const [second, setSecond] = React.useState(Math.ceil(Math.random() * 9));
+        const [value, setValue] = React.useState("");
+        const [result, setResult] = React.useState("");
+        const inputRef = React.useRef(null); // dom에 접근
+
+        const onChangeInput = (e) => {
+          setValue(e.target.value);
+        };
+
+        const onSubmitForm = (e) => {
+          e.preventDefault();
+          if (Number(value) === first * second) {
+            // react에서 setState를 한번에 모아서 처리하기 때문에 렌더링이 한번만 일어남
+            setResult((prevResult) => {
+              return `${value} 딩동댕`;
+            });
+            setFirst(Math.ceil(Math.random() * 9));
+            setSecond(Math.ceil(Math.random() * 9));
+            setValue("");
+            inputRef.current.focus();
+          } else {
+            setResult("땡");
+            setValue("");
+            inputRef.current.focus();
+          }
+        };
+
+        console.log("렌더링");
+        // state가 바뀌면 GuGuDan 함수 자체가 다시 실행, class보다 속도 느려지는 점 유의
+        return (
+          // javascript와 html의 class가 혼동되므로 html에서는 className 사용
+          // for 역시 htmlFor로 사용
+          <React.Fragment>
+            <div>
+              {first} 곱하기 {second} 는?
+            </div>
+            <form onSubmit={onSubmitForm}>
+              <input ref={inputRef} type="number" onChange={onChangeInput} value={value} />
+              <button type="submit">입력!</button>
+            </form>
+            <div id="result">{result}</div>
+          </React.Fragment>
+        );
+      };
+    </script>
+    <script type="text/babel">
+      ReactDOM.render(<GuGuDan />, document.querySelector("#root"));
+    </script>
+  </body>
+</html>

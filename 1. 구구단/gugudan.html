@@ -11,6 +11,7 @@
   <body>
     <div id="root"></div>
     <script type="text/babel">
+      // class component
       class GuGuDan extends React.Component {
         // constructor 부분 없어도 OK
         constructor(props) {
@@ -19,41 +20,41 @@
             first: Math.ceil(Math.random() * 9),
             second: Math.ceil(Math.random() * 9),
             value: "",
-            result: ""
+            result: "",
           };
         }
 
         // 이벤트 콜백함수들
-        onSubmit = e => {
+        onSubmit = (e) => {
           e.preventDefault();
           if (Number(this.state.value) === this.state.first * this.state.second) {
             // 함수형 setState, 첫번째 인자로 이전 state를 받음?
             // 이전 state값을 활용해 state를 설정할 경우 함수형 setState를 사용하는 것이 좋음
-            this.setState(prevState => {
+            this.setState((prevState) => {
               return {
                 result: `${prevState.value} 딩동댕`,
                 first: Math.ceil(Math.random() * 9),
                 second: Math.ceil(Math.random() * 9),
-                value: ""
+                value: "",
               };
             });
             this.input.focus(); // document.querySelector('input').focus() 와 같음
           } else {
             this.setState({
               result: "땡",
-              value: ""
+              value: "",
             });
             this.input.focus();
           }
         };
 
-        onChange = e => this.setState({ value: e.target.value });
+        onChange = (e) => this.setState({ value: e.target.value });
 
-        onRefInput = c => {
+        onRefInput = (c) => {
           this.input = c;
         };
 
-        input; // ref로 접근
+        input; // dom에 접근
 
         render() {
           console.log("렌더링");
