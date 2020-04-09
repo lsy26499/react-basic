@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, memo } from "react";
 import Try from "./Try";
 
 // this 사용하지 않는 경우는 function을 class 밖으로 빼낼 수 있음
@@ -13,7 +13,7 @@ function getNumbers() {
   return array;
 }
 
-const NumberBaseball = () => {
+const NumberBaseball = memo(() => {
   const [result, setResult] = useState("");
   const [value, setValue] = useState("");
   const [answer, setAnswer] = useState(getNumbers());
@@ -80,7 +80,7 @@ const NumberBaseball = () => {
       </ul>
     </>
   );
-};
+});
 
 export default NumberBaseball;
 
