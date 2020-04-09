@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import Try from "./TryClass";
 
 // this 사용하지 않는 경우는 function을 class 밖으로 빼낼 수 있음
@@ -25,6 +25,8 @@ class NumberBaseball extends Component {
     e.preventDefault();
     if (this.state.value === this.state.answer.join("")) {
       // 이전값을 활용하므로 함수형 setState로 사용
+      // 미세한 작업을 더 할 수 있다는 장점 있음
+      // 함수 안에 다른 함수 넣는 경우: 1급 객체, 1급 함수, high order function
       this.setState((prevState) => {
         return {
           result: "홈런!",
@@ -38,6 +40,8 @@ class NumberBaseball extends Component {
         answer: getNumbers(),
         tries: [],
       });
+      // React.createRef 이용
+      this.inputRef.current.focus();
     } else {
       const answerArr = this.state.value.split("").map((elem) => Number(elem));
       let strike = 0;
@@ -79,12 +83,25 @@ class NumberBaseball extends Component {
     this.setState({ value: e.target.value });
   };
 
+  inputRef = createRef();
+  // React.createRef를 사용하면 onInputRef 사용할 필요 X
+
+  // onInputRef = (c) => {
+  //   this.inputRef = c;
+  // };
+  // 예전 방식은 함수이기 때문에 함수 안쪽에 다른 동작 할 수 있다는 장점 있음
+
   render() {
     return (
       <>
         <h1>{this.state.result}</h1>
         <form onSubmit={this.onSubmitForm}>
-          <input maxLength={4} value={this.state.value} onChange={this.onChangeInput} />
+          <input
+            ref={this.inputRef}
+            maxLength={4}
+            value={this.state.value}
+            onChange={this.onChangeInput}
+          />
           <button>입력!</button>
         </form>
         <div>시도: {this.state.tries.length}</div>
