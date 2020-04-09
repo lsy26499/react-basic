@@ -92,6 +92,8 @@ class NumberBaseball extends Component {
   // 예전 방식은 함수이기 때문에 함수 안쪽에 다른 동작 할 수 있다는 장점 있음
 
   render() {
+    // render 안에서 this.setState 실행하면 무한반복
+    // render가 this.setState 실행, this.setState가 또 render 실행...
     return (
       <>
         <h1>{this.state.result}</h1>
