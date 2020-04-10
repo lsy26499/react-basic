@@ -1,84 +1,64 @@
-import React, { Component } from "react";
+import React, { useState, useRef } from "react";
 
-class ReactionTest extends Component {
-  state = {
-    state: "waiting",
-    message: "클릭해서 시작하세요",
-    result: [],
-  };
+const ReactionTest = () => {
+  const [state, setState] = useState("waiting");
+  const [message, setMessage] = useState("클릭해서 시작하세요");
+  const [result, setResult] = useState([]);
+  const timeout = useRef(null);
+  const startTime = useRef();
+  const endTime = useRef();
 
-  timeout;
-  startTime;
-  endTime;
-
-  onClickScreen = (e) => {
-    const { state, message, result } = this.state;
+  const onClickScreen = (e) => {
     if (state === "waiting") {
-      this.setState({
-        state: "ready",
-        message: "초록색이 되면 클릭하세요",
-      });
-      this.timeout = setTimeout(() => {
-        this.setState({
-          state: "now",
-          message: "지금 클릭",
-        });
-        this.startTime = new Date();
-        // 시작시간 기록, state 바뀐 것이 아니기 때문에 렌더링 일어나지X
+      setState("ready");
+      setMessage("초록색이 되면 클릭하세요");
+      timeout.current = setTimeout(() => {
+        setState("now");
+        setMessage("지금 클릭");
+        startTime.current = new Date();
       }, Math.floor(Math.random() * 1000) + 2000); // 2~3초 랜덤
     } else if (state === "ready") {
       // 성급하게 클릭
-      this.setState({
-        state: "waiting",
-        message: "너무 성급하시군요! 초록색이 된 후에 클릭하세요",
-      });
-      clearTimeout(this.timeout);
+      setState("waiting");
+      setMessage("너무 성급하시군요! 초록색이 된 후에 클릭하세요");
+      clearTimeout(timeout.current);
     } else if (state === "now") {
       // 반응속도 체크
-      this.endTime = new Date();
-      this.setState((prevState) => {
-        return {
-          state: "waiting",
-          message: "클릭해서 시작하세요",
-          result: [...prevState.result, this.endTime - this.startTime],
-        };
+      endTime.current = new Date();
+      setState("waiting");
+      setMessage("클릭해서 시작하세요");
+      setResult((prevResult) => {
+        return [...prevResult, endTime.current - startTime.current];
       });
     }
   };
 
-  onReset = () => {
-    const { result } = this.state;
-    this.setState({
-      result: [],
-    });
+  const onReset = () => {
+    setResult([]);
   };
 
-  renderAverage = () => {
-    const { result } = this.state;
+  const renderAverage = () => {
     return result.length === 0 ? null : (
       <>
         <div>
-          평균 시간: {result.reduce((acc, cur) => acc + cur) / result.length}
+          평균 시간: {result.reduce((acc, cur) => (acc += cur)) / result.length}
           ms
         </div>
         <div>{result.length}회 클릭하셨습니다</div>
-        <button onClick={this.onReset}>리셋</button>
+        <button onClick={onReset}>리셋</button>
       </>
     );
   };
 
-  render() {
-    const { state, message } = this.state;
-    return (
-      <>
-        <div id="screen" className={state} onClick={this.onClickScreen}>
-          {message}
-        </div>
-        {this.renderAverage()}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <div id="screen" className={state} onClick={onClickScreen}>
+        {message}
+      </div>
+      {renderAverage()}
+    </>
+  );
+};
 
 export default ReactionTest;
 
@@ -88,3 +68,9 @@ export default ReactionTest;
 // 함수보다는 새 컴포넌트로 빼서 사용하는 것이 더 좋음
 
 // Todo: 결과창 새 컴포넌트로 빼기 (result를 props로)
+
+// Hooks에서는 위의 코드의 timeout, starttime과 같이 변수 만들어 저장할 때 ref 사용
+// ref를 dom에 접근할 때 뿐만아니라 this의 속성들을 표현할 때도 사용(Hooks에서)
+// useState: 리턴 부분이 재실행 -> 다시 렌더링
+// useRef: 리턴 부분 재실행되지 않음 -> 불필요한 렌더링이 일어나지 않음
+// 그래서 값이 바뀌지만 화면에는 영향 미치고싶지 않을 때 useRef 사용

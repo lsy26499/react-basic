@@ -81,10 +81,3 @@ class ReactionTest extends Component {
 }
 
 export default ReactionTest;
-
-// react의 조건문은 삼항연산자 / && || 같은 연산자 이용
-// react의 반복문은 map 이용
-// 조건문/반복문이 너무 길어질 경우 따로 함수로 빼서 사용
-// 함수보다는 새 컴포넌트로 빼서 사용하는 것이 더 좋음
-
-// Todo: 결과창 새 컴포넌트로 빼기 (result를 props로)
