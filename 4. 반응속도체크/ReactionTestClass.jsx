@@ -1,6 +1,7 @@
 import React, { Component } from "react";
+import ResultClass from "./ResultClass";
 
-class ReactionTest extends Component {
+class ReactionTestClass extends Component {
   state = {
     state: "waiting",
     message: "클릭해서 시작하세요",
@@ -53,31 +54,17 @@ class ReactionTest extends Component {
     });
   };
 
-  renderAverage = () => {
-    const { result } = this.state;
-    return result.length === 0 ? null : (
-      <>
-        <div>
-          평균 시간: {result.reduce((acc, cur) => acc + cur) / result.length}
-          ms
-        </div>
-        <div>{result.length}회 클릭하셨습니다</div>
-        <button onClick={this.onReset}>리셋</button>
-      </>
-    );
-  };
-
   render() {
-    const { state, message } = this.state;
+    const { state, message, result } = this.state;
     return (
       <>
         <div id="screen" className={state} onClick={this.onClickScreen}>
           {message}
         </div>
-        {this.renderAverage()}
+        <ResultClass resultInfo={result} reset={this.onReset} />
       </>
     );
   }
 }
 
-export default ReactionTest;
+export default ReactionTestClass;

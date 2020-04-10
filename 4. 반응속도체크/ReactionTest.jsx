@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, memo } from "react";
+import Result from "./Result";
 
-const ReactionTest = () => {
+const ReactionTest = memo(() => {
   const [state, setState] = useState("waiting");
   const [message, setMessage] = useState("클릭해서 시작하세요");
   const [result, setResult] = useState([]);
@@ -37,28 +38,15 @@ const ReactionTest = () => {
     setResult([]);
   };
 
-  const renderAverage = () => {
-    return result.length === 0 ? null : (
-      <>
-        <div>
-          평균 시간: {result.reduce((acc, cur) => (acc += cur)) / result.length}
-          ms
-        </div>
-        <div>{result.length}회 클릭하셨습니다</div>
-        <button onClick={onReset}>리셋</button>
-      </>
-    );
-  };
-
   return (
     <>
       <div id="screen" className={state} onClick={onClickScreen}>
         {message}
       </div>
-      {renderAverage()}
+      <Result resultInfo={result} reset={onReset} />
     </>
   );
-};
+});
 
 export default ReactionTest;
 
@@ -74,3 +62,7 @@ export default ReactionTest;
 // useState: 리턴 부분이 재실행 -> 다시 렌더링
 // useRef: 리턴 부분 재실행되지 않음 -> 불필요한 렌더링이 일어나지 않음
 // 그래서 값이 바뀌지만 화면에는 영향 미치고싶지 않을 때 useRef 사용
+
+// return 안에 for, if 사용할 때:
+// {} 안에는 javascript 사용할 수 있고 함수 안에는 if, for 사용할 수 있다는 점을 이용
+// return 안쪽 {} 안에 즉시실행함수 만들어 if, for 사용
