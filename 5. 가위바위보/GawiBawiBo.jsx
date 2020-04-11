@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const coords = {
   바위: "0",
@@ -18,123 +18,85 @@ const computerChoice = (imgCoord) => {
   })[0];
 };
 
-class GawiBawiBo extends Component {
-  state = {
-    result: "",
-    imgCoord: "0",
-    score: 0,
-  };
+const GawiBawiBo = () => {
+  const [result, setResult] = useState("");
+  const [imgCoord, setImgCoord] = useState(coords.바위);
+  const [score, setScore] = useState(0);
+  const interval = useRef();
 
-  interval;
+  // class의 라이프사이클과 비슷한 역할
+  // 첫번째 인수는 함수, 두번째 인수는 배열
+  // 배열에는 바꾸고 싶은 state가 들어감
+  // 빈 배열을 넘긴다면 처음 한번만 실행되고 다시 실행되지 X
+  // state마다 다른 효과 적용하고 싶다면 useEffect 여러번 사용할 수 있음
+  useEffect(() => {
+    // componentDidMount, componentDidUpdate 역할 (1:1 대응은 X)
+    console.log("다시 실행"); // 함수형 컴포넌트는 렌더링 될때마다 다시실행
+    interval.current = setInterval(changeHand, 100);
+    return () => {
+      //componentWillUnmount 역할
+      console.log("다시 실행 종료");
+      clearInterval(interval.current);
+    };
+  }, [imgCoord]);
+  // imgCoord 바뀔때마다 매번 리렌더링되며 setInterval - clearInterval 반복되며 setInterval 같은 효과를 냄
 
-  changeHand = () => {
-    const { imgCoord } = this.state; // 바깥에 선언하면 클로저 문제 발생
-    // 비동기함수가 바깥의 변수 참조하면 클로저 문제 발생
+  // useLayoutEffect: useEffect가 화면 렌더링 된 후에 실행되는 것과는 다르게 화면이 바뀌기 전에 감지, 특수한 상황에서만 사용, 사용법은 같음
+
+  const changeHand = () => {
     if (imgCoord === coords.바위) {
-      this.setState({
-        imgCoord: coords.가위,
-      });
+      setImgCoord(coords.가위);
     } else if (imgCoord === coords.가위) {
-      this.setState({
-        imgCoord: coords.보,
-      });
+      setImgCoord(coords.보);
     } else if (imgCoord === coords.보) {
-      this.setState({
-        imgCoord: coords.바위,
-      });
+      setImgCoord(coords.바위);
     }
   };
 
-  componentDidMount() {
-    this.interval = setInterval(this.changeHand, 100);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  // render 안쪽의 이벤트리스너 익명 콜백함수의 (e) => 를 없애는 대신 위쪽 메소드 추가할 때 함께 써줌
-  // 함수를 연달아 쓰는 패턴: high order function (고차함수)
-  onClickBtn = (choice) => (e) => {
-    const { imgCoord } = this.state;
-    clearInterval(this.interval);
+  const onClickBtn = (choice) => (e) => {
+    clearInterval(interval.current);
     const myScore = scores[choice];
     const cpuScore = scores[computerChoice(imgCoord)];
     const diff = myScore - cpuScore;
 
     if (diff === 0) {
-      this.setState({
-        result: "비겼습니다",
-      });
+      setResult("비겼습니다");
     } else if ([1, -2].includes(diff)) {
-      this.setState((prevState) => {
-        return {
-          result: "졌습니다",
-          score: prevState.score - 1,
-        };
-      });
+      setResult("졌습니다");
+      setScore((prevScore) => prevScore - 1);
     } else {
-      this.setState((prevState) => {
-        return {
-          result: "이겼습니다",
-          score: prevState.score + 1,
-        };
-      });
+      setResult("이겼습니다");
+      setScore((prevScore) => prevScore + 1);
     }
 
     setTimeout(() => {
-      this.interval = setInterval(this.changeHand, 100);
+      interval.current = setInterval(changeHand, 100);
     }, 1500);
   };
 
-  render() {
-    const { result, score, imgCoord } = this.state;
-    return (
-      <>
-        <div
-          id="computer"
-          style={{
-            background: `url(https://en.pimg.jp/023/182/267/1/23182267.jpg) ${imgCoord} 0`,
-          }}
-        />
-        <div>
-          <button id="bawi" className="btn" onClick={this.onClickBtn("바위")}>
-            바위
-          </button>
-          <button id="gawi" className="btn" onClick={this.onClickBtn("가위")}>
-            가위
-          </button>
-          <button id="bo" className="btn" onClick={this.onClickBtn("보")}>
-            보
-          </button>
-        </div>
-        <div>{result}</div>
-        <div>현재 {score}점</div>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <div
+        id="computer"
+        style={{
+          background: `url(https://en.pimg.jp/023/182/267/1/23182267.jpg) ${imgCoord} 0`,
+        }}
+      />
+      <div>
+        <button id="bawi" className="btn" onClick={onClickBtn("바위")}>
+          바위
+        </button>
+        <button id="gawi" className="btn" onClick={onClickBtn("가위")}>
+          가위
+        </button>
+        <button id="bo" className="btn" onClick={onClickBtn("보")}>
+          보
+        </button>
+      </div>
+      <div>{result}</div>
+      <div>현재 {score}점</div>
+    </>
+  );
+};
 
 export default GawiBawiBo;
-
-// 컴포넌트 라이프사이클
-// 렌더링되고 컴포넌트가 dom에 붙는 순간 특정한 동작을 할 수 있음
-// componentDidMount - componentWillUnMount 쌍
-
-// componentDidMount(): 렌더링이 처음 실행되고 성공적이었다면 실행
-// 리렌더링 일어날 때는 componentDidMount 실행되지 X
-// 안쪽에서 setState 실행해줄 수 있음
-// 비동기 요청을 많이 함 (setInterval 같이)
-
-// componentDidUpdate(): 리렌더링 된 후 실행
-
-// componentWillUnmount(): 부모에 의해 컴포넌트가 제거되기 직전에 실행
-// componentDidMount에서 했던 작업들을 제거
-// 비동기 요청 정리를 많이 함 (clearInterval 같이)
-
-// Class의 경우:
-// constructor -> render -> ref -> componentDidMount
-// -> setState / props 바뀔 때 -> shouldComponentUpdate(true) -> render -> componentDidUpdate
-// -> 부모에 의해 없어질 때 -> componentWillUnmount -> 소멸
-
-// Hooks는 라이프사이클을 가지고 있지 않음

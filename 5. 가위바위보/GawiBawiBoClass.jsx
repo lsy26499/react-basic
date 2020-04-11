@@ -21,7 +21,7 @@ const computerChoice = (imgCoord) => {
 class GawiBawiBo extends Component {
   state = {
     result: "",
-    imgCoord: "0",
+    imgCoord: coords.바위,
     score: 0,
   };
 
