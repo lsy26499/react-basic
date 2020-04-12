@@ -1,4 +1,4 @@
-import React, { useState, useRef, memo } from "react";
+import React, { useState, useRef, memo, useCallback } from "react";
 import Result from "./Result";
 
 const ReactionTest = memo(() => {
@@ -34,9 +34,9 @@ const ReactionTest = memo(() => {
     }
   };
 
-  const onReset = () => {
+  const onReset = useCallback(() => {
     setResult([]);
-  };
+  }, [result]);
 
   return (
     <>
