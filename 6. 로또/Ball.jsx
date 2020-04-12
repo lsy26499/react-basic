@@ -1,8 +1,8 @@
-import React, { memo } from "react";
+import React from "react";
 
 // state 사용하지 않을 때는 함수 컴포넌트로 만들 수 있음
 // Hooks 아님
-const Ball = memo(({ number }) => {
+const Ball = React.memo(({ number }) => {
   let background;
   if (number <= 10) {
     background = "red";
