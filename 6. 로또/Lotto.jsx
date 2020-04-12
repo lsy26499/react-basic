@@ -92,3 +92,17 @@ export default Lotto;
 // useEffect, useMemo, useCallback의 두 번째 인자가 어떤 때에 다시 실행되어야 하는지 결정하므로 매우 중요
 
 // Hooks에서는 순서가 매우 중요, 실행 순서도 작성된 순서대로
+// useState는 최상위에
+// 조건문 안에 절대 넣으면 X, 함수나 반복문에도 웬만하면 넣지 말 것
+// useEffect, useMemo, useCallback 등의 안에는 useState 사용 X
+
+// componentDidMount에서는 아무것도 해주지 않고 componentDidUpdate에서만 수행하게 하기
+// const mounted = useRef(false);
+// useEffect(() => {
+//   if(!mounted.current) {
+//       mounted.current = true;
+//   } else {
+//       ajax 요청
+//   }
+// }, [바뀌는값]);
+// useEffect 부분을 useRef 사용해 아무것도 해주지 않도록 설정
