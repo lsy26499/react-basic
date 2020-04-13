@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useCallback, useEffect } from "react";
+import React, { useState, useReducer, useCallback, useEffect, memo } from "react";
 import Table from "./Table";
 
 const initialState = {
@@ -28,6 +28,7 @@ const reducer = (state, action) => {
       };
 
     case CLICK_CELL:
+      // state의 불변성을 지키기 위해 spread 연산자로 얕은복사 해서 사용
       const tableData = [...state.tableData];
       tableData[action.row] = [...tableData[action.row]]; // immer 라이브러리로 가독성 문제 해결
       tableData[action.row][action.cell] = state.turn;
@@ -60,11 +61,12 @@ const reducer = (state, action) => {
   }
 };
 
-const TicTacToe = () => {
+const TicTacToe = memo(() => {
   // 아래 state들을 TicTacToe -> Table -> Tr -> Td로 전달해야 함
   // 이를 해결하기 위해 contextAPI 이용하거나
   // state 자체의 갯수 줄이는 useReducer 사용
 
+  // redux에서 따온 개념
   const [state, dispatch] = useReducer(reducer, initialState);
   const { winner, turn, tableData, currentCell } = state;
 
@@ -130,7 +132,7 @@ const TicTacToe = () => {
       {winner && <div>{winner} 님의 승리</div>}
     </>
   );
-};
+});
 
 export default TicTacToe;
 
