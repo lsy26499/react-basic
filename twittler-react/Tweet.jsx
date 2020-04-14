@@ -1,6 +1,6 @@
-import React from "react";
+import React, { memo } from "react";
 
-const Tweet = ({ tweet, onClickUserName }) => {
+const Tweet = memo(({ tweet, onClickUserName }) => {
   return (
     <li className="tweet">
       <div className="tweet-info">
@@ -12,6 +12,6 @@ const Tweet = ({ tweet, onClickUserName }) => {
       <div className="tweet-comment">{tweet.message}</div>
     </li>
   );
-};
+});
 
 export default Tweet;

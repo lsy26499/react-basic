@@ -107,3 +107,7 @@ button {
 button:active {
   transform: scale(0.9);
 }
+
+button#back-btn {
+  display: none;
+}

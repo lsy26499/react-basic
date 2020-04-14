@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo } from "react";
 import { DATA } from "./data";
 import FormArea from "./FormArea";
 

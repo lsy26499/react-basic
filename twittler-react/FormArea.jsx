@@ -1,12 +1,19 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, memo } from "react";
 import TweetArea from "./TweetArea";
+import { generateNewTweet } from "./data";
 
 const FormArea = ({ DATA }) => {
   const [userName, setUserName] = useState("");
   const [comment, setComment] = useState("");
   const [data, setData] = useState([...DATA].reverse());
+  const [filteredData, setFilterData] = useState([...data]);
+  const [text, setText] = useState("check new tweet!");
+
   const inputEl = useRef(null);
   const commentEl = useRef(null);
+  const checkBtn = useRef(null);
+
+  let clickedUser = "";
 
   const onChangeInput = (e) => {
     setUserName(e.target.value);
@@ -38,6 +45,20 @@ const FormArea = ({ DATA }) => {
     }
   };
 
+  const onClickCheckButton = (e) => {
+    if (text === "check new tweet!") {
+      setData([generateNewTweet(), ...data]);
+    } else if (checkBtn.current.textContent === "back") {
+      setText("check new tweet!");
+    }
+  };
+
+  const onClickUserName = (e) => {
+    clickedUser = e.target.textContent;
+    setFilterData([...data.filter((obj) => clickedUser === obj.user)]);
+    setText("back");
+  };
+
   return (
     <>
       <form id="write-comment-wrapper">
@@ -62,7 +83,17 @@ const FormArea = ({ DATA }) => {
           Tweet!
         </button>
       </form>
-      <TweetArea data={data} />
+      <div id="check-new-tweet">
+        <button ref={checkBtn} onClick={onClickCheckButton} id="check-new-tweet-btn">
+          {text}
+        </button>
+      </div>
+      <TweetArea
+        data={data}
+        text={text}
+        filteredData={filteredData}
+        onClickUserName={onClickUserName}
+      />
     </>
   );
 };
