@@ -1,0 +1,109 @@
+html,
+body {
+  box-sizing: border-box;
+}
+
+header {
+  font-size: 2em;
+  font-family: sans-serif;
+  font-weight: bold;
+  border: 2px solid #708098;
+  color: #708098;
+  text-align: center;
+  margin: 10px;
+  padding: 10px 0;
+}
+
+main {
+  margin: 10px;
+}
+
+#write-comment-wrapper {
+  display: block;
+  padding: 8px 12px;
+  padding-bottom: 30px;
+  margin-bottom: 30px;
+  background-color: #dce3ef;
+}
+
+.form-span {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+#write-username {
+  display: block;
+  margin-bottom: 20px;
+}
+
+#write-comment {
+  display: block;
+  margin-bottom: 20px;
+}
+
+#submit-button {
+  display: block;
+}
+
+#check-new-tweet {
+  display: block;
+  padding: 10px 12px;
+  background-color: #9ab4d4;
+}
+
+#comments-wrapper {
+  display: block;
+  height: auto;
+  padding: 8px 12px;
+  background-color: #dce3ef;
+}
+
+ul {
+  all: unset;
+  list-style: none;
+}
+
+.tweet {
+  padding: 10px 4px 15px 4px;
+  border-bottom: 1px solid #708098;
+}
+
+.tweet-info {
+  margin-bottom: 10px;
+}
+
+.user {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.user:hover {
+  cursor: pointer;
+  color: #708098;
+}
+
+.timestamp {
+  position: absolute;
+  right: 40px;
+  font-size: 12px;
+}
+
+.tweet-comment {
+  font-size: 14px;
+}
+
+button {
+  all: unset;
+  cursor: pointer;
+  background-color: #eacad5;
+  padding: 4px 7px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+button:active {
+  transform: scale(0.9);
+}
