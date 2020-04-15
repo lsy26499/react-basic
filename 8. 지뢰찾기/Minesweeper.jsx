@@ -11,13 +11,14 @@ export const CODE = {
   FLAG: -3,
   QUESTION_MINE: -4,
   FLAG_MINE: -5,
-  CLICK_MINE: -6,
+  CLICKED_MINE: -6,
   OPENED: 0, // 0 이상이면 다 opened, 주변의 지뢰가 있는 갯수만큼 숫자를 더해줄 것
 };
 
 export const TableContext = createContext({
   // 초기값, 각 요소들 형태만 맞춰주기
   tableData: [],
+  halted: true,
   dispatch: () => {},
 });
 
@@ -25,6 +26,7 @@ const initalState = {
   tableData: [],
   timer: 0,
   result: "",
+  halted: true,
 };
 
 const plantMine = (row, cell, mine) => {
@@ -60,14 +62,80 @@ const plantMine = (row, cell, mine) => {
 };
 
 export const START_GAME = "START_GAME";
+export const OPEN_CELL = "OPEN_CELL";
+export const CLICK_MINE = "CLICK_MINE";
+export const FLAG_CELL = "FLAG_CELL";
+export const QUSETION_CELL = "QUSETION_CELL";
+export const NORMALIZE_CELL = "NORMALIZE_CELL";
 
+// case 문 안에서 const 때문에 난 에러
+// case 문은 별도의 렉시컬 스코프가 없기 때문에 별도의 스코프가 필요한 case 문을 {}로 감싸 줘야 한다
 const reducer = (state, action) => {
   switch (action.type) {
     case START_GAME: // 지뢰심기
       return {
         ...state,
         tableData: plantMine(action.row, action.cell, action.mine),
+        halted: false,
       };
+    case OPEN_CELL: {
+      const tableData = [...state.tableData];
+      tableData[action.row] = [...state.tableData[action.row]];
+      tableData[action.row][action.cell] = CODE.OPENED; // 셀 여는 조작 (td에서 dispatch)
+      return {
+        ...state,
+        tableData,
+      };
+    }
+    case CLICK_MINE: {
+      const tableData = [...state.tableData];
+      tableData[action.row] = [...state.tableData[action.row]];
+      tableData[action.row][action.cell] = CODE.CLICKED_MINE;
+      return {
+        ...state,
+        tableData,
+        halted: true,
+      };
+    }
+    case FLAG_CELL: {
+      const tableData = [...state.tableData];
+      tableData[action.row] = [...state.tableData[action.row]];
+      if (tableData[action.row][action.cell] === CODE.MINE) {
+        tableData[action.row][action.cell] = CODE.FLAG_MINE;
+      } else {
+        tableData[action.row][action.cell] = CODE.FLAG;
+      }
+      return {
+        ...state,
+        tableData,
+      };
+    }
+    case QUSETION_CELL: {
+      const tableData = [...state.tableData];
+      tableData[action.row] = [...state.tableData[action.row]];
+      if (tableData[action.row][action.cell] === CODE.FLAG_MINE) {
+        tableData[action.row][action.cell] = CODE.QUESTION_MINE;
+      } else {
+        tableData[action.row][action.cell] = CODE.QUSETION;
+      }
+      return {
+        ...state,
+        tableData,
+      };
+    }
+    case NORMALIZE_CELL: {
+      const tableData = [...state.tableData];
+      tableData[action.row] = [...state.tableData[action.row]];
+      if (tableData[action.row][action.cell] === CODE.QUESTION_MINE) {
+        tableData[action.row][action.cell] = CODE.MINE;
+      } else {
+        tableData[action.row][action.cell] = CODE.NORMAL;
+      }
+      return {
+        ...state,
+        tableData,
+      };
+    }
     default:
       return state;
   }
@@ -75,15 +143,16 @@ const reducer = (state, action) => {
 
 const Minesweeper = () => {
   const [state, dispatch] = useReducer(reducer, initalState);
-  const value = useMemo(() => ({ tableData: state.tableData, dispatch }), [state.tableData]);
+  const { tableData, halted, timer, result } = state;
+  const value = useMemo(() => ({ tableData, halted, dispatch }), [tableData, halted]);
   // dispatch는 항상 같게 유지됨
 
   return (
     <TableContext.Provider value={value}>
       <Form />
-      <div>{state.timer}</div>
+      <div>{timer}</div>
       <Table />
-      <div>{state.result}</div>
+      <div>{result}</div>
     </TableContext.Provider>
   );
 };
