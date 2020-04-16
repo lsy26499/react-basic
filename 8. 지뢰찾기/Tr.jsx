@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, memo } from "react";
 import Td from "./Td";
 import { TableContext } from "./Minesweeper";
 
-const Tr = ({ rowIndex }) => {
+const Tr = memo(({ rowIndex }) => {
   const { tableData } = useContext(TableContext);
   return (
     <tr>
@@ -12,6 +12,6 @@ const Tr = ({ rowIndex }) => {
           .map((td, i) => <Td rowIndex={rowIndex} cellIndex={i} key={i} />)}
     </tr>
   );
-};
+});
 
 export default Tr;

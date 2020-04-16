@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from "react";
+import React, { useContext, useCallback, memo, useMemo } from "react";
 import {
   TableContext,
   CODE,
@@ -53,42 +53,38 @@ const getTdText = (code) => {
     case CODE.QUESTION:
       return "?";
     default:
-      return;
+      return code || "";
   }
 };
 
-const Td = ({ rowIndex, cellIndex }) => {
+const Td = memo(({ rowIndex, cellIndex }) => {
   const { tableData, dispatch, halted } = useContext(TableContext);
 
   // minesweeper 컴포넌트로 row, cell 값 전달되고 open_cell action을 받아 실행
   // 칸의 코드값에 따른 상태별로 취해줄 action을 다르게 함
-  const onClickTd = useCallback(
-    () => {
-      // 게임이 멈췄으면 아무 일도 하지 않도록
-      if (halted) {
-        return;
-      }
+  const onClickTd = useCallback(() => {
+    // 게임이 멈췄으면 아무 일도 하지 않도록
+    if (halted) {
+      return;
+    }
 
-      switch (tableData[rowIndex][cellIndex]) {
-        case CODE.OPENED:
-        case CODE.FLAG_MINE:
-        case CODE.FLAG:
-        case CODE.QUESTION_MINE:
-        case CODE.QUESTION:
-          return;
-        case CODE.NORMAL:
-          dispatch({ type: OPEN_CELL, row: rowIndex, cell: cellIndex });
-          return;
-        case CODE.MINE:
-          dispatch({ type: CLICK_MINE, row: rowIndex, cell: cellIndex });
-          return;
-        default:
-          return;
-      }
-    },
-    [tableData[rowIndex][cellIndex]],
-    halted
-  );
+    switch (tableData[rowIndex][cellIndex]) {
+      case CODE.OPENED:
+      case CODE.FLAG_MINE:
+      case CODE.FLAG:
+      case CODE.QUESTION_MINE:
+      case CODE.QUESTION:
+        return;
+      case CODE.NORMAL:
+        dispatch({ type: OPEN_CELL, row: rowIndex, cell: cellIndex });
+        return;
+      case CODE.MINE:
+        dispatch({ type: CLICK_MINE, row: rowIndex, cell: cellIndex });
+        return;
+      default:
+        return;
+    }
+  }, [tableData[rowIndex][cellIndex], halted]);
 
   const onRightClickTd = useCallback(
     (e) => {
@@ -114,23 +110,35 @@ const Td = ({ rowIndex, cellIndex }) => {
           return;
       }
     },
-    [tableData[rowIndex][cellIndex]],
-    halted
+    [tableData[rowIndex][cellIndex]]
   );
 
-  // 일반 셀을 우클릭 두번 했을 때 QUESTION으로 바뀌지 않는 문제
-  // halted가 각각의 셀로 적용돼서 전체로 적용X -> 게임 끝나도 다른 셀들은 클릭됨
-  // 오타인것같은데 못찾겠음 복붙해봐도 똑같음..
-
+  // td 리렌더링 이슈: useMemo로 캐싱
+  //  return useMemo(() => (
+  //    <td
+  //      style={getTdStyle(tableData[rowIndex][cellIndex])}
+  //      onClick={onClickTd}
+  //      onContextMenu={onRightClickTd}
+  //    >
+  //      {getTdText(tableData[rowIndex][cellIndex])}
+  //    </td>
+  //  ));
   return (
-    <td
-      style={getTdStyle(tableData[rowIndex][cellIndex])}
-      onClick={onClickTd}
-      onContextMenu={onRightClickTd}
-    >
+    <RealTd
+      onClickTd={onClickTd}
+      onRightClickTd={onRightClickTd}
+      data={tableData[rowIndex][cellIndex]}
+    />
+  );
+});
+
+// td 리렌더링 이슈: 컴포넌트 쪼개기
+const RealTd = memo(({ onClickTd, onRightClickTd, data }) => {
+  return () => (
+    <td style={getTdStyle(data)} onClick={onClickTd} onContextMenu={onRightClickTd}>
       {getTdText(tableData[rowIndex][cellIndex])}
     </td>
   );
-};
+});
 
 export default Td;
